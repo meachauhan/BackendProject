@@ -1,0 +1,19 @@
+{
+  "name": "backendproject",
+  "version": "1.0.0",
+  "description": "Backend Project with JavaScript",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [
+    "javascript",
+    "backend"
+  ],
+  "author": "Akash Chauhan",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}
