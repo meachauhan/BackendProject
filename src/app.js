@@ -22,7 +22,7 @@ app.use(cookieParser())
 import userRouter from "./routes/user.routes.js"
 
 //routes declartion
-app.use('/',userRouter)
+app.use('/api/v1/users',userRouter)
 
 //htpps://localhost:8000/api/v1/users
 
