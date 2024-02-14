@@ -1,6 +1,6 @@
-import {mongoose ,Schema} from mongoose
-import bcrypt from bcrypt
-import { jwt } from "jsonwebtoken"
+import {mongoose ,Schema} from "mongoose"
+import bcrypt from "bcrypt"
+import  jwt  from "jsonwebtoken"
 const userSchema= new Schema({
     username:{
         type:String,
@@ -28,13 +28,13 @@ const userSchema= new Schema({
         required:true,
         
     },
-    avatar:{
+    coverImage:{
         type:String, //Couldinary URL for Images
         
     },
 
     watchHistory:[{
-        type:mongoose.Schema.Types().ObjectId,
+        type:Schema.Types.ObjectId,
         ref:"Video"
     }],
 
@@ -54,7 +54,7 @@ const userSchema= new Schema({
 //can't use this function since it won't be having this acccess
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")) return next()
-    this.password=bcrypt.hash(this.password,10)
+    this.password= await bcrypt.hash(this.password,10)
     next()
 })
 

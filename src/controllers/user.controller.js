@@ -1,5 +1,5 @@
 import asyncHandler from "../utils/asyncHandler.js"
-import APIerror from "../utils/APIerror.js"
+import {APIerror} from "../utils/APIerror.js"
 import {User} from "../models/user.models.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { APIResponse } from "../utils/APIResponse.js"
@@ -25,7 +25,7 @@ const registerUser = asyncHandler(async(req,res)=>{
         throw new APIerror(400, "All fields are required")
     }
 
-    const exitedUser=User.findOne({
+    const exitedUser=await User.findOne({
         $or:[{username},{email}]
     })
 
@@ -34,9 +34,15 @@ const registerUser = asyncHandler(async(req,res)=>{
     }
 
     //local path of images uploaded on server by multer
+    console.log(req.files)
     const avatarLocalPath=req.files?.avatar[0]?.path
-    const coverImageLocalPath=req.files?.coverImage[0]?.path
+    // const coverImageLocalPath=req.files?.coverImage[0]?.path
 
+
+    let coverImageLocalPath ;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+        coverImageLocalPath=req.files.coverImage[0].path
+    }
 
     if(!avatarLocalPath){
         throw new APIerror(400,"Avatar Image is required")
@@ -45,13 +51,15 @@ const registerUser = asyncHandler(async(req,res)=>{
    const avatar= await uploadOnCloudinary(avatarLocalPath)
    const coverImage=await uploadOnCloudinary(coverImageLocalPath)
 
+   console.log("Cover Image Path", coverImage);
+
    if(!avatar) throw new APIerror(400,"Avatar Image is required")
 
    const user=await User.create(
     {
         fullname,
         avatar:avatar.url,
-        coverImage:coverImage?.url || "",
+        coverImage:coverImage.url,
         email,
         username:username.toLowerCase(),
         password
