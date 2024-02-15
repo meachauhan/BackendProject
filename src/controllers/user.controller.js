@@ -4,6 +4,21 @@ import {User} from "../models/user.models.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { APIResponse } from "../utils/APIResponse.js"
 
+const generateAccessAndRefreshToken= async(userid)=>{
+    try {
+
+        const user = await User.findById(userid)
+        const accessToken=user.generateAccessToken()
+        const refreshToken= user.generateRefreshToken()
+        user.refreshToken=refreshToken
+        await user.save({validateBeforeSave:false})
+        return {accessToken,refreshToken}
+        
+    } catch (error) {
+        throw new APIerror(500,"Something Went wrong while creating access and refresh token")
+    }
+}
+
 const registerUser = asyncHandler(async(req,res)=>{
     // get User details from frontend
     // validation not empty
@@ -78,4 +93,63 @@ const registerUser = asyncHandler(async(req,res)=>{
     
 })
 
-export {registerUser}
+const loginUser = asyncHandler (async (req,res)=> {
+    //  fetch data from frontend
+    //  username or email
+    //  find user
+    //  validate the details :Password check
+    //  create access token and refresh token 
+    //  Send Secure cookies
+
+    // fetch data from req body
+
+    const { email, username, password} = req.body
+
+    if(!username || !email)  throw new APIerror(400,"Username or Email is required")
+
+    //find User by username or email
+    const user= await User.findOne({
+        $or:[{username,email}]
+    })
+
+    if(!user) throw new APIerror (404,"User doesn't Exist.")
+    
+    //Password Check
+    const isPassowrdValid= await user.isPasswordIsCorrect(password)
+    if(!isPassowrdValid) throw new APIerror(401,"Invalid user Credentials")
+
+    const {accessToken, refreshToken}= await generateAccessAndRefreshToken(user._id)
+
+    const loggedInUser= await User.findById(user._id).select("-password -refreshToken")
+
+    //cokkieOption
+    const options={
+        httpOnly:true,
+        secure:true
+    }
+
+    return res
+    .status(200)
+    .cookie("accesToken",accessToken,options)
+    .cookie("refreshToken",refreshToken,options)
+    .json(
+        new APIResponse(
+            200,
+            {
+                user:loggedInUser,accessToken,refreshToken
+            },
+            "User LoggedIn successfully"
+        )
+    )
+
+
+
+})
+
+
+const logoutUser= asyncHandler(async(req,res)=>{
+
+
+
+})
+export { registerUser, loginUser, logoutUser }
