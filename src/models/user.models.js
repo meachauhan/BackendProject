@@ -51,7 +51,7 @@ const userSchema= new Schema({
 },{timestamps:true})
 
 //Pre hooks Mongoose
-//can't use this function since it won't be having this acccess
+//can't use arrow  function since it won't be having this acccess
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")) return next()
     this.password= await bcrypt.hash(this.password,10)
