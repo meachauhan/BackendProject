@@ -151,8 +151,6 @@ const logoutUser= asyncHandler(async(req,res)=>{
 
     const refreshToken = req.cookie
 
-})
-export { registerUser, loginUser, logoutUser }
     await User.findByIdAndUpdate(req.user._id,{
         $set:{
             refreshToken:undefined,
