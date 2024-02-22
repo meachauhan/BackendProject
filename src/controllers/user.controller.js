@@ -103,9 +103,9 @@ const loginUser = asyncHandler (async (req,res)=> {
 
     // fetch data from req body
 
-    const { email, username, password} = req.body
-
-    if(!username || !email)  throw new APIerror(400,"Username or Email is required")
+    const {email, username, password} = req.body
+    console.log(`${email} ${username} ${password} ${req.body.username}`);
+    if(!username && !email)  throw new APIerror(400,"Username or Email is required")
 
     //find User by username or email
     const user= await User.findOne({

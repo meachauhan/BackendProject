@@ -2,8 +2,9 @@ import  express from "express";
 
 import cors from "cors"
 import cookieParser from "cookie-parser"
-
-
+// const swaggerUI=require('swagger-ui-express')
+// const swaggerfile=require('../docs/swagger-output.json')
+// import {swd
 const app=express()
 
 //Basic Middleware configuration
@@ -23,6 +24,7 @@ import userRouter from "./routes/user.routes.js"
 
 //routes declartion
 app.use('/api/v1/users',userRouter)
+// app.user('/docs',swaggerUI.serve,swaggerUI.setup(swaggerfile))
 
 //htpps://localhost:8000/api/v1/users
 

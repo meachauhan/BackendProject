@@ -1,4 +1,4 @@
-{
+ export default  swaggerFile={
   "swagger": "2.0",
   "info": {
     "title": "MyAPI",

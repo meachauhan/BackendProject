@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
-    "swagger":" node ./docs/swagger.js"
+    "swagger": " node ./docs/swagger.js"
   },
   "keywords": [
     "javascript",
