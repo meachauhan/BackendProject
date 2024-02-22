@@ -63,6 +63,7 @@ userSchema.methods.isPasswordIsCorrect= async function (password){
 }
 
 userSchema.methods.generateAccessToken= function (){
+    console.log("Generatinvg Access Token")
     return jwt.sign({
         _id:this._id,
         email:this.email,
@@ -70,7 +71,7 @@ userSchema.methods.generateAccessToken= function (){
         fullname:this.fullname
     },process.env.ACCESS_TOKEN_SECRET,
     {
-        expiryIn:process.env.ACCESS_TOKEN_EXPIRY
+        expiresIn:process.env.ACCESS_TOKEN_EXPIRY
     })
 }
 
@@ -80,7 +81,7 @@ userSchema.methods.generateRefreshToken= function (){
         
     },process.env.REFRESH_TOKEN_SECRET,
     {
-        expiryIn:process.env.REFRESH_TOKEN_EXPIRY
+        expiresIn:process.env.REFRESH_TOKEN_EXPIRY
     })
 }
 

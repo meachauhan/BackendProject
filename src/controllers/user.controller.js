@@ -8,8 +8,11 @@ const generateAccessAndRefreshToken= async(userid)=>{
     try {
 
         const user = await User.findById(userid)
-        const accessToken=user.generateAccessToken()
-        const refreshToken= user.generateRefreshToken()
+        console.log(user)//
+        const accessToken= user.generateAccessToken()
+        console.log("Access tOken: ",accessToken)
+        const refreshToken=  user.generateRefreshToken()
+        console.log(accessToken, refreshToken)
         user.refreshToken=refreshToken
         await user.save({validateBeforeSave:false})
         return {accessToken,refreshToken}
@@ -104,7 +107,7 @@ const loginUser = asyncHandler (async (req,res)=> {
     // fetch data from req body
 
     const {email, username, password} = req.body
-    console.log(`${email} ${username} ${password} ${req.body.username}`);
+    // console.log(`${email} ${username} ${password} ${req.body.username}`);
     if(!username && !email)  throw new APIerror(400,"Username or Email is required")
 
     //find User by username or email
@@ -117,6 +120,7 @@ const loginUser = asyncHandler (async (req,res)=> {
     //Password Check
     const isPassowrdValid= await user.isPasswordIsCorrect(password)
     if(!isPassowrdValid) throw new APIerror(401,"Invalid user Credentials")
+    console.log(user.username, user._id)
 
     const {accessToken, refreshToken}= await generateAccessAndRefreshToken(user._id)
 
