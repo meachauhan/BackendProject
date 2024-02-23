@@ -304,6 +304,74 @@ const updateUserCoverImage =asyncHandler(async(req,res)=>{
 
 
 })
+
+const getUserChannelProfile= asyncHandler(async (req,res)=>{
+
+    const {username}=req.params
+    if(!username?.trim()) throw new APIerror(400,"Username is missing")
+
+    const channel= await User.aggegator([
+        {
+            $match:{
+                username:username?.toLowerCase()
+            }
+        },
+        {
+            $lookup:{
+                from:"subscriptions",
+                localField:"_id",
+                foreingField:"channel",
+                as:"subscribers"
+            }
+        },{
+            $lookup:{
+                from:"subscriptions",
+                localField:"_id",
+                foreingField:"subscriber",
+                as:"subscribedTo"
+            }
+        },
+        {
+            $addFields:{
+                subscribersCount:{
+                    $size:"$subscribers"
+                },
+                channelsSubcribedToCount:{
+                    $size:"$subscribedTo"
+                }
+            },
+            isSubscribed:{
+                $cond:{
+                    if:{$in:[req.user?._id,"$subscribers.subscriber"]},
+                    then:true,
+                    else:false
+                }
+            }
+        },
+        {
+            $project:{
+                fullname:1,
+                username:1,
+                subscribersCount:1,
+                channelsSubcribedToCount:1,
+                isSubscribed:1,
+                avatar:1,
+                coverImage:1,
+                email:1
+            }
+        }
+    ])
+
+    //Aggreagate returns array of Object(Values)
+    console.log(channel)
+    if(!channel?.length) throw APIerror(404,"Channel doesn't exists")
+
+    return res
+    .status(200)
+    .json(
+        new APIResponse(200,channel[0],"User channel fetched Succssfully")
+    )
+})
 export { registerUser, 
         loginUser,
         logoutUser,
@@ -311,5 +379,7 @@ export { registerUser,
         changeUserPassword,
         getCurrentUser,
         updateAccountDetails,
-        updateUserAvatar
+        updateUserAvatar,
+        updateUserCoverImage,
+        getUserChannelProfile
     } 
