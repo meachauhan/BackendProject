@@ -262,11 +262,11 @@ const updateAccountDetails = asyncHandler (async (req, res) => {
 
 const updateUserAvatar =asyncHandler(async(req,res)=>{
     const avatarLocalPath=req.files?.path
-    if(!avatarLocalPath) throw new APIResponseError(404, "Avatar file is missing")
+    if(!avatarLocalPath) throw new APIerror(404, "Avatar file is missing")
 
     const avatar= await uploadOnCloudinary(avatarLocalPath)
 
-    if(!avatar) throw new APIResponseError(501,"Something went wrong uploading avatar")
+    if(!avatar) throw new APIerror(501,"Something went wrong uploading avatar")
 
     const user =await user.findByIdAndUpdate(req.user?._id,
         

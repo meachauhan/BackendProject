@@ -11,6 +11,7 @@ import { APIResponse } from "../utils/APIResponse.js"
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
     //TODO: get all videos based on query, sort, pagination
+
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {
@@ -18,13 +19,13 @@ const publishAVideo = asyncHandler(async (req, res) => {
     // TODO: get video, upload to cloudinary, create video
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
-    if(!incomingRefreshToken) throw new APIResponseError(401,`Invalid refresh token`)
+    if(!incomingRefreshToken) throw new APIerror(401,`Invalid refresh token`)
 
     const decodedToken=jwt.verify(incomingRefreshToken,process.env.ACCESS_REFRESH_SECRET)
 
     const user= await User.findById(decodedToken?._id)
 
-    if(!user) throw new APIResponseError(401,`Invalid refresh token`)
+    if(!user) throw new APIerror(401,`Invalid refresh token`)
 
     const videoLocalFilePath=req.files?.videoFile[0]?.path
     if(!videoLocalFilePath) throw new ApiError(404,"Please give Video File")
