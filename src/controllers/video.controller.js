@@ -2,7 +2,6 @@ import mongoose, {isValidObjectId} from "mongoose"
 import {Video} from "../models/video.model.js"
 import {User} from "../models/user.model.js"
 import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { APIerror } from "../utils/APIerror.js"
@@ -67,13 +66,49 @@ const getVideoById = asyncHandler(async (req, res) => {
 const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: update video details like title, description, thumbnail
+    const thumbnailImagePath=req.files?.path
+    if(thumbnailImagePath){
+        const thumbnail= await uploadOnCloudinary(thumbnailImagePath)
+        if(!thumbnail) throw new APIerror(501,"something went wrong while updating thumbnail")
+
+    }
+
+    let {title, description}=req.body
+
+    const video=await Video.findOne(videoId)
+
+    title= title || video.title
+    description=description || video.description
+    
+    const updateVideo=await video.findByIdAndUpdate(videoId,
+        {
+            $set:{
+                title: title,
+                description:description,
+                thumbnail:thumbnail.url
+
+            }
+        },
+        {
+            new:true
+        }
+     )
+     return res
+     .status(200)
+     .json(
+        new APIResponse(
+            200,
+            updateVideo,
+            "Video Details updated Successfully"
+        )
+     )
 
 })
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: delete video
-    
+
 })
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
