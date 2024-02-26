@@ -5,6 +5,8 @@ import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import { APIerror } from "../utils/APIerror.js"
+import { APIResponse } from "../utils/APIResponse.js"
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
@@ -15,11 +17,51 @@ const getAllVideos = asyncHandler(async (req, res) => {
 const publishAVideo = asyncHandler(async (req, res) => {
     const { title, description} = req.body
     // TODO: get video, upload to cloudinary, create video
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+
+    if(!incomingRefreshToken) throw new APIResponseError(401,`Invalid refresh token`)
+
+    const decodedToken=jwt.verify(incomingRefreshToken,process.env.ACCESS_REFRESH_SECRET)
+
+    const user= await User.findById(decodedToken?._id)
+
+    if(!user) throw new APIResponseError(401,`Invalid refresh token`)
+
+    const videoLocalFilePath=req.files?.videoFile[0]?.path
+    if(!videoLocalFilePath) throw new ApiError(404,"Please give Video File")
+    
+    let thumbnailImagePath ;
+    if(req.files && Array.isArray(req.files.thumbnail) && req.files.thumbnail.length > 0){
+        thumbnailImagePath=req.files.thumbnail[1].path
+    }
+
+    const video=await uploadOnCloudinary(videoLocalFilePath)
+    const thumbnail=await uploadOnCloudinary(thumbnailImagePath)
+
+    if(!video && !thumbnail) throw new APIerror("Video and Thumbnail required")
+
+    console.log(video)
+
+
+
+
+
 })
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: get video by id
+    const video=Video.findOne(videoId)
+    return res
+    .status(200)
+    .json(
+        new APIResponse(
+            200,
+            video,
+
+            "Video Fetched Successfully"
+        )
+    )
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
@@ -31,6 +73,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: delete video
+    
 })
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
