@@ -78,21 +78,22 @@ const getVideoById = asyncHandler(async (req, res) => {
 const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: update video details like title, description, thumbnail
-    const thumbnailImagePath=req.files?.path
+    const thumbnailImagePath=req.file?.path
+    let thumbnail
     if(thumbnailImagePath){
-        const thumbnail= await uploadOnCloudinary(thumbnailImagePath)
+        thumbnail= await uploadOnCloudinary(thumbnailImagePath)
         if(!thumbnail) throw new APIerror(501,"something went wrong while updating thumbnail")
 
     }
 
     let {title, description}=req.body
 
-    const video=await Video.findOne(videoId)
+    const video=await Video.findById(videoId)
 
     title= title || video.title
     description=description || video.description
     
-    const updateVideo=await video.findByIdAndUpdate(videoId,
+    const updateVideo=await Video.findByIdAndUpdate(videoId,
         {
             $set:{
                 title: title,
@@ -105,6 +106,8 @@ const updateVideo = asyncHandler(async (req, res) => {
             new:true
         }
      )
+
+     if(!updateVideo) throw new APIerror(500,"Something went wrong while updating thumbnail")
      return res
      .status(200)
      .json(
