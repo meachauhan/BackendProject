@@ -72,6 +72,22 @@ const updateComment = asyncHandler(async (req, res) => {
 
 const deleteComment = asyncHandler(async (req, res) => {
     // TODO: delete a comment
+
+    const {commentId}= req.params
+
+    const deletedComment=await Comment.findByIdAndDelete(commentId)
+
+    if(!deletedComment) throw new APIerror(500,"somehting Went wrong while delting the comment")
+
+    return res
+    .status(200)
+    .json(
+        new APIResponse(
+            200,
+            deletedComment,
+            "Comment Deleted Successfully"
+        )
+    )
 })
 
 export {
