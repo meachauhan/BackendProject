@@ -59,9 +59,10 @@ const publishAVideo = asyncHandler(async (req, res) => {
 })
 
 const getVideoById = asyncHandler(async (req, res) => {
-    const { videoId } = req.params
+    const { videoId } =req.params
     //TODO: get video by id
-    const video=await Video.findOne(videoId)
+     
+    const video=await Video.findById(videoId)
     return res
     .status(200)
     .json(
