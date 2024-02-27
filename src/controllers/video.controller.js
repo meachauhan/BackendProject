@@ -16,31 +16,42 @@ const getAllVideos = asyncHandler(async (req, res) => {
 const publishAVideo = asyncHandler(async (req, res) => {
     const { title, description} = req.body
     // TODO: get video, upload to cloudinary, create video
-    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
-
-    if(!incomingRefreshToken) throw new APIerror(401,`Invalid refresh token`)
-
-    const decodedToken=jwt.verify(incomingRefreshToken,process.env.ACCESS_REFRESH_SECRET)
-
-    const user= await User.findById(decodedToken?._id)
-
-    if(!user) throw new APIerror(401,`Invalid refresh token`)
-
+    console.log(req.user) //User forwareded from jwtVerification Middleware
+    console.log(req.files)
     const videoLocalFilePath=req.files?.videoFile[0]?.path
-    if(!videoLocalFilePath) throw new ApiError(404,"Please give Video File")
-    
-    let thumbnailImagePath ;
-    if(req.files && Array.isArray(req.files.thumbnail) && req.files.thumbnail.length > 0){
-        thumbnailImagePath=req.files.thumbnail[1].path
-    }
+    const thumbnailImagePath=req.files?.thumbnail[0]?.path
+    if(!videoLocalFilePath && !thumbnail) throw new APIerror(404,"Please give Video File")
+    console.log(videoLocalFilePath, thumbnailImagePath)
+   
+    const uploadedVideo=await uploadOnCloudinary(videoLocalFilePath)
+    const uploadedThumbnail=await uploadOnCloudinary(thumbnailImagePath)
 
-    const video=await uploadOnCloudinary(videoLocalFilePath)
-    const thumbnail=await uploadOnCloudinary(thumbnailImagePath)
+    if(!uploadedVideo && !uploadedThumbnail) throw new APIerror("Video and Thumbnail required")
 
-    if(!video && !thumbnail) throw new APIerror("Video and Thumbnail required")
+    console.log(uploadedVideo)
 
-    console.log(video)
+    const video=await Video.create(
+        {
+            title,
+            description,
+            videoFile:uploadedVideo.url,
+            thumbnail:uploadedThumbnail.url,
+            duration:uploadedVideo.duration,
+            owner:req.user
+        }
+    )
 
+    if(!video) throw new APIerror(500,"Something went Wrong while uploading the Video")
+
+    return res
+    .status(200)
+    .json(
+        new APIResponse(
+            200,
+            video,
+            "Video uploaded successfully"
+        )
+    )
     
 
 

@@ -8,8 +8,8 @@ export const verifyJWT= asyncHandler (async(req, res, next)=>{
         console.log("token", token)
         if(!token) throw new APIerror(401,"Unathorized access ")
         
-        console.log("Decoded Token: ", jwt.verify(token,process.env.ACCESS_TOKEN_SECRET));
-        const decodedToken=await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+        console.log("Decoded Token: ", jwt.verify(token?.trim(),process.env.ACCESS_TOKEN_SECRET));
+        const decodedToken=await jwt.verify(token.trim(),process.env.ACCESS_TOKEN_SECRET)
         const user=await User.findById(decodedToken?._id).select("-password -refreshToken")
         if(!user) throw new APIerror(401,"Invalid access token")
         
