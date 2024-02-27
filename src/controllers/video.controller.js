@@ -1,8 +1,7 @@
 import mongoose, {isValidObjectId} from "mongoose"
-import {Video} from "../models/video.model.js"
-import {User} from "../models/user.model.js"
-import {ApiError} from "../utils/ApiError.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import {Video} from "../models/video.models.js"
+import {User} from "../models/user.models.js"
+import asyncHandler from "../utils/asyncHandler.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { APIerror } from "../utils/APIerror.js"
 import { APIResponse } from "../utils/APIResponse.js"
@@ -42,7 +41,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
     console.log(video)
 
-
+    
 
 
 

@@ -3,7 +3,6 @@ import { registerUser, loginUser, logoutUser, changeUserPassword, getCurrentUser
 import { upload } from "../middleware/multer.middleware.js";
 import {refreshAccessToken } from "../controllers/user.controller.js";
 import {verifyJWT} from "../middleware/auth.middleware.js"
-import { verify } from "jsonwebtoken";
 
 const router=Router()
 
