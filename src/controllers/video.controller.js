@@ -123,7 +123,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: delete video
-    const deletedVideo= await Video.deleteOne(videoId)
+    const deletedVideo= await Video.findByIdAndDelete(videoId)
     if(!deletedVideo) throw new APIerror(501,"Something went wrong while deleting the video")
     return res
     .status(200)
@@ -138,7 +138,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    const video=await Video.findOne(videoId)
+    const video=await Video.findById(videoId)
     if(!video) throw new APIerror(404,"Invalid Video Id")
 
     video.isPublished=video.isPublished ? false : true
