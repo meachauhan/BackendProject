@@ -112,6 +112,51 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 const toggleTweetLike = asyncHandler(async (req, res) => {
     const {tweetId} = req.params
     //TODO: toggle like on tweet
+    const user=req.user
+    const tweet=await Tweets.findById(tweetId)
+    if(!tweet) throw new APIerror(404,"Invalid Comment Id")
+
+    let likeDetails=null
+     likeDetails= await Like.aggregate(
+        [
+            {
+                $match:{
+                    likedBy:user?._id,
+                    tweet:tweet?._id
+                }
+            }
+        ]
+    )
+    console.log(likeDetails.length)
+    // if(!likeDetails) throw new APIerror(500, "Something went wrong while updating likes")
+    // console.log(likeDetails.isLiked)
+
+    let result
+    if(likeDetails.length>0){
+        console.log("Already Liked")
+         result= await Like.deleteOne({
+            likedBy:user?._id,
+            tweet:tweet?._id
+        })
+    }else{
+        console.log("Not Liked")
+         result=await Like.create(
+            {
+                likedBy:user,
+                tweet:tweet
+            }
+        )
+    }
+
+    return res
+    .status(200)
+    .json(
+        new APIResponse(
+            200,
+            result,
+            "Like Updated Successfully"
+        )
+    )
 }
 )
 
