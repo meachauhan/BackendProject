@@ -18,6 +18,12 @@ app.use(express.urlencoded({limit:"16kb",extended:true}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
+//Swagger
+import swaggerUI from "swagger-ui-express"
+import swaggerDocument from "./utils/swagger-output.json" assert {type:"json"}
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+
 
 //routes import
 import userRouter from "./routes/user.routes.js"
