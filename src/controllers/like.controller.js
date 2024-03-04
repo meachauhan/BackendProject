@@ -24,9 +24,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
             }
         ]
     )
-    console.log(likeDetails.length)
-    // if(!likeDetails) throw new APIerror(500, "Something went wrong while updating likes")
-    // console.log(likeDetails.isLiked)
+    
 
     let result
     if(likeDetails.length>0){
@@ -76,8 +74,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         ]
     )
     console.log(likeDetails.length)
-    // if(!likeDetails) throw new APIerror(500, "Something went wrong while updating likes")
-    // console.log(likeDetails.isLiked)
+    
 
     let result
     if(likeDetails.length>0){
@@ -128,8 +125,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
         ]
     )
     console.log(likeDetails.length)
-    // if(!likeDetails) throw new APIerror(500, "Something went wrong while updating likes")
-    // console.log(likeDetails.isLiked)
+    
 
     let result
     if(likeDetails.length>0){
