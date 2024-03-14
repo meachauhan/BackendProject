@@ -100,9 +100,51 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 const getSubscribedChannels = asyncHandler(async (req, res) => {
   const { subscriberId } = req.params;
   const subscriber = await User.findById(subscriberId);
-  const subscribedChannels = await Subscription.find({
-    subscriber: subscriber?._id,
-  });
+  const subscribedChannels = await Subscription.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "channel",
+        foreignField: "_id",
+        as: "channel_details",
+        pipeline: [
+          {
+            $project: {
+              fullname: 1,
+              avatar: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $addFields: {
+        channel_details: {
+          $first: "$channel_details",
+        },
+      },
+    },
+    {
+      $match: {
+        subscriber: subscriber?._id,
+      },
+    },
+    {
+      $addFields: {
+        channel_fullname: "$channel_details.fullname",
+        channel_avatar: "$channel_details.avatar",
+        channel_id: "$channel",
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        channel_fullname: 1,
+        channel_avatar: 1,
+        channel_id: 1,
+      },
+    },
+  ]);
   return res
     .status(200)
     .json(
