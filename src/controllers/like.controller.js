@@ -122,6 +122,11 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
 const getLikedVideos = asyncHandler(async (req, res) => {
   //TODO: get all liked videos
+  const likedVideos = await Like.find({ video: { $exists: true } });
+
+  return res
+    .status(200)
+    .json(new APIResponse(200, likedVideos, "Liked Videos"));
 });
 
 export { toggleCommentLike, toggleTweetLike, toggleVideoLike, getLikedVideos };
