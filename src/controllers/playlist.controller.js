@@ -35,6 +35,11 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 const getPlaylistById = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   //TODO: get playlist by id
+  const playlist = await Playlist.findById(playlistId);
+
+  return res
+    .status(200)
+    .json(new APIResponse(200, playlist, "Playlist fetched successfully"));
 });
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
