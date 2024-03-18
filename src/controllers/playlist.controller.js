@@ -80,6 +80,10 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 const deletePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   // TODO: delete playlist
+  const playlist = await Playlist.findByIdAndDelete(playlistId);
+  return res
+    .status(200)
+    .json(new APIResponse(200, playlist, "Playlist deleted successfully"));
 });
 
 const updatePlaylist = asyncHandler(async (req, res) => {
