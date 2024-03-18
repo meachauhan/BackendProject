@@ -63,6 +63,18 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
   // TODO: remove video from playlist
+  const newplaylist = await Playlist.findByIdAndUpdate(
+    playlistId,
+    {
+      $pull: { videos: videoId },
+    },
+    {
+      new: true,
+    },
+  );
+  return res
+    .status(200)
+    .json(new APIResponse(200, newplaylist, "Video removed from playlist"));
 });
 
 const deletePlaylist = asyncHandler(async (req, res) => {
