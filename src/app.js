@@ -35,6 +35,7 @@ import likeRouter from "./routes/like.routes.js";
 import healthcheck from "./routes/healthcheck.routes.js";
 import subscription from "./routes/subscription.routes.js";
 import playlist from "./routes/playlist.routes.js";
+import dashboard from "./routes/dashboard.routes.js";
 //routes declartion
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/videos", videoRouter);
@@ -44,6 +45,7 @@ app.use("/api/v1/like", likeRouter);
 app.use("/api/v1/healthcheck", healthcheck);
 app.use("/api/v1/subscription", subscription);
 app.use("/api/v1/playlist", playlist);
+app.use("/api/v1/dashboard", dashboard);
 // app.user('/docs',swaggerUI.serve,swaggerUI.setup(swaggerfile))
 
 //htpps://localhost:8000/api/v1/users
