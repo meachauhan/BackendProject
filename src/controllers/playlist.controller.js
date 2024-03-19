@@ -90,6 +90,16 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   const { name, description } = req.body;
   //TODO: update playlist
+  const updatePlaylist = await Playlist.findByIdAndUpdate(
+    playlistId,
+    { name, description },
+    { new: true },
+  );
+  return res
+    .status(200)
+    .json(
+      new APIResponse(200, updatePlaylist, "Playlist updated successfully"),
+    );
 });
 
 export {
