@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Video } from "../models/video.models.js";
+import { Like } from "../models/like.model.js";
 import { Subscription } from "../models/subscriptions.models.js";
 import { APIResponse } from "../utils/APIResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -18,18 +19,62 @@ const getChannelStats = asyncHandler(async (req, res) => {
       $count: "totalSubscriber",
     },
   ]);
-  console.log(subscribersCount.hasOwnProperty("totalSubscriber"));
   if (!subscribersCount.hasOwnProperty("totalSubscriber")) {
     subscribersCount = {
       totalSubscriber: 0,
     };
   }
+  console.log(user?._id);
+  let videoCount = await Video.aggregate([
+    {
+      $match: {
+        owner: user?._id,
+      },
+    },
+  ]);
 
+  if (!videoCount.hasOwnProperty("totalVideos")) {
+    videoCount = {
+      totalVideos: 0,
+    };
+  }
+
+  let likesCount = await Like.aggregate([
+    {
+      $lookup: {
+        from: "videos",
+        localField: "video",
+        foreignField: "_id",
+        as: "videoDetails",
+      },
+    },
+    {
+      $addFields: {
+        videoDetails: {
+          $first: "$videoDetails",
+        },
+      },
+    },
+    {
+      $match: {
+        "videoDetails.owner": user._id,
+      },
+    },
+    {
+      $count: "totalLikes",
+    },
+  ]);
+
+  console.log(likesCount);
+
+  const stats = {
+    totalVideos: videoCount.totalVideos,
+    totalSubscriber: subscribersCount.totalSubscriber,
+    totalLikes: likesCount[0].totalLikes,
+  };
   return res
     .status(200)
-    .json(
-      new APIResponse(200, subscribersCount, "Subscriber Fetched Successfully"),
-    );
+    .json(new APIResponse(200, stats, "Channel Details Fetched Successfully"));
 });
 
 const getChannelVideos = asyncHandler(async (req, res) => {
