@@ -12,7 +12,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
   let subscribersCount = await Subscription.aggregate([
     {
       $match: {
-        channel: user?._id,
+        channel: user._id,
       },
     },
     {
@@ -25,19 +25,10 @@ const getChannelStats = asyncHandler(async (req, res) => {
     };
   }
   console.log(user?._id);
-  let videoCount = await Video.aggregate([
-    {
-      $match: {
-        owner: user?._id,
-      },
-    },
-  ]);
 
-  if (!videoCount.hasOwnProperty("totalVideos")) {
-    videoCount = {
-      totalVideos: 0,
-    };
-  }
+  let videoCount = await Video.find({ owner: user?._id }).count();
+
+  console.log(videoCount);
 
   let likesCount = await Like.aggregate([
     {
@@ -68,7 +59,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
   console.log(likesCount);
 
   const stats = {
-    totalVideos: videoCount.totalVideos,
+    totalVideos: videoCount,
     totalSubscriber: subscribersCount.totalSubscriber,
     totalLikes: likesCount[0].totalLikes,
   };
