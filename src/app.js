@@ -22,9 +22,11 @@ app.use(cookieParser());
 
 //Swagger
 import swaggerUI from "swagger-ui-express";
-import swaggerDocument from "./utils/swagger-output.json" assert { type: "json" };
+import { specs } from "./utils/swaggerOptions.js";
+// import swaggerDocument from "./utils/swagger-output.yml" assert { type: "yml" };
 
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+// app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 //routes import
 import userRouter from "./routes/user.routes.js";

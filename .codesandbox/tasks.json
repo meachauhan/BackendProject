@@ -16,8 +16,7 @@
     },
     "swagger": {
       "name": "swagger",
-      "command": "npm run swagger",
-      "runAtStart": false
+      "command": "npm run swagger"
     }
   }
 }
